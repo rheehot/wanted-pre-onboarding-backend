@@ -2,6 +2,7 @@ import json
 
 from django.views import View
 from django.http import JsonResponse
+from django.db.models import Q
 
 from .models import Job
 
@@ -60,3 +61,36 @@ class UpdateJobView(View):
 
         except Job.DoesNotExist:
             return JsonResponse({"MESSAGE": "NOT_EXIST"}, status=400)
+
+
+class JobListView(View):
+
+    def get(self, request):
+        search = request.GET.get('search')
+
+        q = Q()
+
+        if search:
+            q &= Q(position__contains=search)
+
+            q |= Q(company_id__name__contains=search)
+
+        jobs = Job.objects.filter(q)
+
+        job_list = [
+
+            {
+                "id": job.id,
+                "company": job.company.name,
+                "country": job.company.region.country.name,
+                "region": job.company.region.name,
+                "position": job.position,
+                "incentive": job.incentive,
+                "stack": job.stack
+            }
+
+            for job in jobs
+
+        ]
+
+        return JsonResponse({'results': job_list}, status=200)
