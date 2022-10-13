@@ -1,3 +1,30 @@
-from django.shortcuts import render
+import json
 
-# Create your views here.
+from django.views import View
+from django.http import JsonResponse
+
+from .models import Job
+
+
+class PostJobView(View):
+    def post(self, request):
+        try:
+            job_data = json.loads(request.body)
+            id = job_data["id"]
+            position = job_data["position"]
+            incentive = job_data["incentive"]
+            detail = job_data["detail"]
+            stack = job_data["stack"]
+
+            Job.objects.create(
+                company_id=id,
+                position=position,
+                incentive=incentive,
+                detail=detail,
+                stack=stack
+            )
+
+            return JsonResponse({"MESSAGE": "SUCCESS"}, status=201)
+
+        except KeyError:
+            return JsonResponse({"MESSAGE": "KEY_ERROR"}, status=400)
