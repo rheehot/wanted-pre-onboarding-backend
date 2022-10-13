@@ -7,4 +7,5 @@ urlpatterns = [
     path("/job/<int:job_id>/delete", UpdateJobView.as_view()),
     path("/job", JobListView.as_view()),
     path("/job/<int:job_id>", JobDetailView.as_view())
+
 ]
