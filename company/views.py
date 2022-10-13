@@ -50,3 +50,13 @@ class UpdateJobView(View):
 
         except KeyError:
             return JsonResponse({"MESSAGE": "KEY_ERROR"}, status=400)
+
+    def delete(self, request, job_id):
+        try:
+            job = Job.objects.get(id=job_id)
+            job.delete()
+
+            return JsonResponse({"MESSAGE": "DELETE_SUCCESS"}, status=200)
+
+        except Job.DoesNotExist:
+            return JsonResponse({"MESSAGE": "NOT_EXIST"}, status=400)
